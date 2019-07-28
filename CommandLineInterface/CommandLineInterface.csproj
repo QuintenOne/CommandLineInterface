@@ -42,6 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Applications\AdminApplication.cs" />
+    <Compile Include="Applications\Application.cs" />
+    <Compile Include="Applications\ApplicationAttrubute.cs" />
+    <Compile Include="Applications\MethodAttrubute.cs" />
+    <Compile Include="Applications\UserApplication.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
