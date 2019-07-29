@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace CommandLineInterface.Applications
 {
-    public class ApplicationAttribute : Attribute
-    {
-        public string name;
+	public class ApplicationAttribute : Attribute
+	{
+		public string name;
 
-        public ApplicationAttribute(string name) => this.name = name;
-    }
+		public ApplicationAttribute(string name) => this.name = name;
+	}
 }

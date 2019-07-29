@@ -1,26 +1,30 @@
 using CommandLineInterface.Applications;
+using CommandLineInterface.Model;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace CommandLineInterface
 {
-    class Program
+	class Program
     {
         static void Main(string[] args)
         {
-            Application.discover();
-            Console.WriteLine(Application.writeMethods());
+			Database.insert(new CustomerModel("Quinten"));
+			Database.select(new CustomerModel());
+
+			Application.discover();
+
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
 
             while (true)
             {
                 try
                 {
+
                     CLI.wait();
+
                 }
                 catch (Exception exception)
                 {
@@ -40,19 +44,16 @@ namespace CommandLineInterface
         {
             string command = Console.ReadLine();
 
-            validate(command);
-
-            run(new Command(command));
-        }
-
-        static void validate(string command)
-        {
             if (Regex.Match(command, "^[a-zA-Z0-9 ]*$").Length != command.Length)
                 throw new Exception("Invalid command");
-        }
 
-        static void run(Command command){
-            Console.WriteLine(Application.execute(command));
+            string output = Application.execute(new Command(command));
+
+            Console.BackgroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine(output);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
 
