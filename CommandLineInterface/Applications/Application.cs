@@ -4,15 +4,12 @@ using System.Linq;
 using System.Reflection;
 using static CommandLineInterface.CLI;
 
-namespace CommandLineInterface.Applications
-{
-	public class Application
-	{
+namespace CommandLineInterface.Applications {
+	public class Application {
 
 		public static Dictionary<Tuple<string, string, int>, MethodInfo> methods = new Dictionary<Tuple<string, string, int>, MethodInfo>();
 
-		public static void discover()
-		{
+		public static void discover() {
 			foreach (Type type in Assembly.GetExecutingAssembly().GetTypes()) {
 				var applicationAttribute = (ApplicationAttribute)type.GetCustomAttribute(typeof(ApplicationAttribute));
 				if (applicationAttribute != null) {
@@ -34,8 +31,7 @@ namespace CommandLineInterface.Applications
 			}
 		}
 
-		public static string writeMethods()
-		{
+		public static string writeMethods() {
 
 			string strMethods = "";
 
@@ -50,8 +46,7 @@ namespace CommandLineInterface.Applications
 			return strMethods;
 		}
 
-		public static string execute(Command command)
-		{
+		public static string execute(Command command) {
 
 			MethodInfo method;
 

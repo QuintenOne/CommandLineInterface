@@ -1,37 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
 
 namespace CommandLineInterface.Model {
-	class CustomerModel : IModel
-	{
-		public string TableName { get; set; }
+	class CustomerModel : IModel {
+		public string TableName { get { return this.GetType().Name.Replace("Model", "s"); } }
 		public Guid Id { get; set; }
 		public string Name { get; set; }
-		
-		public CustomerModel()
-		{
-			this.TableName = "Customers";
+
+		public CustomerModel() {
 		}
 
-		public CustomerModel(string name)
-		{
-			this.TableName = "Customers";
+		public CustomerModel(string name) {
 			this.Id = new Guid();
 			this.Name = name;
 		}
-		
-		public CustomerModel(Guid id, string name)
-		{
-			this.TableName = "Customers";
+
+		public CustomerModel(Guid id, string name) {
 			this.Id = id;
 			this.Name = name;
 		}
 
 		public static CustomerModel FromDatabase(Guid id, string name) {
-
-			Console.WriteLine($"{id} - {name.Trim()}");
-
 			return new CustomerModel(id, name.Trim());
 		}
 	}

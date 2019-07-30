@@ -1,22 +1,18 @@
 ﻿namespace CommandLineInterface.Applications {
 	[Application("customer")]
-	public class CustomerApplication
-	{
+	public class CustomerApplication {
 		[Method("a")]
-		public static string multi(string name)
-		{
+		public static string multi(string name) {
 			return "one";
 		}
 
 		[Method("b")]
-		public static string multi(string name, string username)
-		{
+		public static string multi(string name, string username) {
 			return "two";
 		}
 
 		[Method("c")]
-		public static string multi()
-		{
+		public static string multi() {
 			return "zero";
 		}
 	}

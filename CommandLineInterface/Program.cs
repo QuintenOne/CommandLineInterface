@@ -1,5 +1,6 @@
 using CommandLineInterface.Applications;
 using CommandLineInterface.Model;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -10,8 +11,10 @@ namespace CommandLineInterface
     {
         static void Main(string[] args)
         {
-			Database.insert(new CustomerModel("Quinten"));
-			Database.select(new CustomerModel());
+			var select = Database.select(new ProductModel() {
+			});
+
+			Console.Write(JsonConvert.SerializeObject(select, Formatting.Indented));
 
 			Application.discover();
 
