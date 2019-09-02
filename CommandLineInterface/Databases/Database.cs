@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Reflection;
 using CommandLineInterface.Model;
+using Newtonsoft.Json;
 
 namespace CommandLineInterface {
 	public static class Database {
@@ -37,24 +38,19 @@ namespace CommandLineInterface {
 			return affectedRows != 0;
 		}
 
-
-		public static List<IModel> select<T>() where T : IModel, new() {
-			return select(new T());
-		}
-
-		public static List<IModel> select(IModel model) {
+		public static List<IModel> select<TModel>(object param = null) where TModel : IModel, new() {
 			List<IModel> models = new List<IModel>();
 
 			using (SqlConnection conn = new SqlConnection(connectionString)) {
 
 				conn.Open();
 
-				string sql = generateSelectQuery(model);
+				string sql = generateSelectQuery<TModel>(param);
 				using (SqlCommand command = new SqlCommand(sql, conn)) {
 					using (SqlDataReader reader = command.ExecuteReader()) {
 
 						while (reader.Read()) {
-							object[] list = new object[model.GetType().GetProperties().Length - 1];
+							object[] list = new object[typeof(TModel).GetProperties().Length - 1];
 
 							for (int i = 0; i < list.Length; i++) {
 								MethodInfo method = typeof(SqlDataReader).GetMethod("GetFieldValue");
@@ -63,8 +59,7 @@ namespace CommandLineInterface {
 								list[i] = genericMethod.Invoke(reader, new object[] { i });
 							}
 
-							models.Add((IModel)model.GetType().GetMethod("FromDatabase").Invoke(reader, list));
-
+							models.Add((IModel)typeof(TModel).GetMethod("FromDatabase").Invoke(reader, list));
 						}
 					}
 				}
@@ -75,15 +70,68 @@ namespace CommandLineInterface {
 			return models;
 		}
 
-		static string generateSelectQuery(IModel model) {
-			var properties = model.GetType().GetProperties();
-			for (int propertyId = 1; propertyId < properties.Length; propertyId++) {
-				var property = properties[propertyId];
-				var propertyName = property.Name;
-				var propertyValue = model.GetType().GetProperty(property.Name).GetValue(model, null);
+		public static List<TModel> exist<TModel>(object param = null) where TModel : IModel, new() {
+			List<TModel> models = new List<TModel>();
+
+			using (SqlConnection conn = new SqlConnection(connectionString)) {
+
+				conn.Open();
+
+				string sql = generateSelectQuery<TModel>(param);
+				using (SqlCommand command = new SqlCommand(sql, conn)) {
+					using (SqlDataReader reader = command.ExecuteReader()) {
+
+						while (reader.Read()) {
+							object[] list = new object[typeof(TModel).GetProperties().Length - 1];
+
+							for (int i = 0; i < list.Length; i++) {
+								MethodInfo method = typeof(SqlDataReader).GetMethod("GetFieldValue");
+								MethodInfo genericMethod = method.MakeGenericMethod(reader.GetFieldType(i));
+
+								list[i] = genericMethod.Invoke(reader, new object[] { i });
+							}
+
+							models.Add((TModel)typeof(TModel).GetMethod("FromDatabase").Invoke(reader, list));
+						}
+					}
+				}
+
+				conn.Close();
 			}
 
-			return $"SELECT * FROM {model.TableName}";
+			return models;
+		}
+
+		static string generateSelectQuery<TModel>(object param) where TModel : IModel, new() {
+			string sql = $"SELECT * FROM {new TModel().TableName}";
+			Console.WriteLine($"--- START PARAM ---");
+			if (param != null) {
+				var properties = param.GetType().GetProperties();
+				
+				for (int propertyId = 0; propertyId < properties.Length; propertyId++) {
+
+					if (propertyId == 0)
+						sql += " WHERE ";
+
+					PropertyInfo property = properties[propertyId];
+					string propertyName = property.Name;
+					object propertyValue = param.GetType().GetProperty(property.Name).GetValue(param, null);
+
+					if (propertyValue.GetType() == typeof(string))
+						propertyValue = ((string)propertyValue).Replace("\"", "\\\\\\\"");
+
+					sql += $"{propertyName} = {JsonConvert.SerializeObject(propertyValue).Replace('\"','\'')}";
+
+
+					if (propertyId != properties.Length - 1)
+						sql += " AND ";
+
+				}
+			}
+			Console.WriteLine($"{sql}");
+			Console.WriteLine($"--- END PARAM ---");
+
+			return sql;
 		}
 
 		static List<string> getPropertyNames(Type type) {

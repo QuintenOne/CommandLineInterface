@@ -77,6 +77,7 @@
     <Compile Include="Applications\ApplicationAttrubute.cs" />
     <Compile Include="Applications\MethodAttrubute.cs" />
     <Compile Include="Applications\CustomerApplication.cs" />
+    <Compile Include="CLI.cs" />
     <Compile Include="Databases\Database.cs" />
     <Compile Include="Model\CustomerModel.cs" />
     <Compile Include="Model\IModel.cs" />
